@@ -9,6 +9,8 @@ from pypykatz.alsadecryptor.win_datatypes import POINTER, PVOID, ULONG, LIST_ENT
 	DWORD, LSA_UNICODE_STRING, PKERB_EXTERNAL_NAME, KIWI_GENERIC_PRIMARY_CREDENTIAL, \
 	LUID, PLSAISO_DATA_BLOB, ULONG64, FILETIME, PCWSTR, SIZE_T, BOOL
 from pypykatz.alsadecryptor.package_commons import PackageTemplate
+from pypykatz.commons.common import hexdump
+from pypykatz import logger
 
 class KerberosTemplate(PackageTemplate):
 	def __init__(self, sysinfo):
@@ -214,7 +216,14 @@ class KerberosTemplate(PackageTemplate):
 		else:
 			raise Exception('Unknown architecture! %s' % sysinfo.architecture)
 
-			
+		logger.debug('template: %s' % template)
+		logger.debug('signature: %s' % template.signature)
+		logger.debug('first_entry_offset: %s' % template.first_entry_offset)
+		logger.debug('kerberos_session_struct: %s' % template.kerberos_session_struct)
+		logger.debug('kerberos_ticket_struct: %s' % template.kerberos_ticket_struct)
+		logger.debug('keys_list_struct: %s' % template.keys_list_struct)
+		logger.debug('hash_password_struct: %s' % template.hash_password_struct)
+		logger.debug('csp_info_struct: %s' % template.csp_info_struct)
 		return template
 		
 class PKERB_SMARTCARD_CSP_INFO_5(POINTER):
@@ -1779,7 +1788,7 @@ class KIWI_KERBEROS_INTERNAL_TICKET_11:
 		res.unk14393_1 = await PVOID.loadvalue(reader)
 		res.unk3       = await PVOID.loadvalue(reader)										# // ULONG		KeyType2 = (reader).value
 		res.unk4       = await PVOID.loadvalue(reader)										# // KIWI_KERBEROS_BUFFER	Key2 = (reader).value
-		res.unk5       = await PVOID.loadvalue(reader)										# // up(reader).value
+		res.unk5       = await PVOID.loadvalue(reader)							# // up(reader).value
 		res.StartTime  = await FILETIME.loadvalue(reader)
 		res.EndTime    = await FILETIME.loadvalue(reader)
 		res.RenewUntil = await FILETIME.loadvalue(reader)
@@ -1791,8 +1800,9 @@ class KIWI_KERBEROS_INTERNAL_TICKET_11:
 		res.strangeNames  = await PVOID.loadvalue(reader)
 		res.unk9          = await ULONG.loadvalue(reader)
 		res.TicketEncType = await ULONG.loadvalue(reader)
-		res.TicketKvno    = await ULONG.loadvalue(reader)
+		res.TicketKvno    = await ULONG.loadvalue(reader)		
 		await reader.align()
+		temp = await reader.peek(0x100)
 		res.Ticket = await KIWI_KERBEROS_BUFFER.load(reader)
 
 		return res

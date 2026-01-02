@@ -65,7 +65,10 @@ class MsvTemplate(PackageTemplate):
 			template.list_entry = PKIWI_MSV1_0_LIST_63
 		
 		elif sysinfo.buildnumber < WindowsBuild.WIN_11_25H2.value:
-			template.list_entry = PKIWI_MSV1_0_LIST_64
+			if sysinfo.msv_dll_timestamp >= 0xd133958f:
+				template.list_entry = PKIWI_MSV1_0_LIST_65
+			else:
+				template.list_entry = PKIWI_MSV1_0_LIST_64
 
 		else:
 			template.list_entry = PKIWI_MSV1_0_LIST_65

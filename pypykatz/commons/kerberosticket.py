@@ -7,12 +7,13 @@
 import datetime
 from asn1crypto import core
 from pypykatz.commons.filetime import filetime_to_dt
-from pypykatz.commons.common import WindowsBuild, GenericReader
+from pypykatz.commons.common import WindowsBuild, GenericReader, hexdump
 from pypykatz.commons.win_datatypes import LSAISO_DATA_BLOB, ENC_LSAISO_DATA_BLOB
 from minikerberos.protocol.asn1_structs import EncryptionKey, PrincipalName, \
 	TicketFlags, KrbCredInfo, krb5_pvno, EncryptedData, KRBCRED, Ticket, \
 	EncKrbCredPart
 from minikerberos.protocol.constants import NAME_TYPE, MESSAGE_TYPE, EncryptionType
+
 
 import enum
 import os
@@ -158,7 +159,7 @@ class KerberosTicket:
 		kt.TicketEncType = kerberos_ticket.TicketEncType
 		kt.TicketKvno = kerberos_ticket.TicketKvno
 		kt.Ticket = kerberos_ticket.Ticket.read(reader)
-		
+
 		kirbi = kt.to_asn1()
 		kt.kirbi_data[kt.generate_filename()] = kirbi
 		
